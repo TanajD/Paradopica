@@ -1,0 +1,312 @@
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+    }
+    #profile-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(#c0eaff, #e0f7ff);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      gap: 20px;
+    }
+.scroll-fade-left,
+.scroll-fade-right {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scroll-fade-left {
+  left: 0;
+  background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+}
+
+.scroll-fade-right {
+  right: 0;
+  background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0));
+}
+
+.photo-scroll-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 10px 0;
+  height: 150; /* container height just above 135px image */
+}
+
+.photo-scroll-row img {
+  width: 240px;   /* scaled down from 960 */
+  height: 135px;  /* scaled down from 540 */
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.photo-scroll-row img:hover {
+  transform: scale(1.05);
+}
+
+
+    .row {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .section {
+      flex: 1;
+      max-width: 500px;
+      height: 200px;
+      background: rgb(0, 132, 255);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      border: 3px solid #ffffff;
+    }
+    .profile-section {
+      flex: 1;
+      min-width: 300px;
+      height: 180px;
+      padding: 10px;
+      border-radius: 10px;
+      
+    
+    }
+    .tab-section {
+      flex: 1;
+      min-width: 300px;
+      height: 150px;
+      background: #0084ff;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      padding-top: 30px;
+      border: 3px solid #ffffff;
+    }
+
+    .tab-section .tab-header {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #70b8ff;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px 20px 20px 20px;
+  border: 3px solid #ffffff;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 20px;
+}
+    .profile-header {
+      position: relative;
+      top: 40px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .profile-header img {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      border: 2px solid #70b8ff;
+    }
+    .profile-section h3 {
+      margin-top: 0;
+    }
+    .profile-stats {
+     height: 128px;                    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;  
+    }
+
+.avatar-canvas {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+.message-scroll-row {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 180px; /* Adjust height as needed */
+  gap: 12px;
+  padding: 10px 0;
+}
+.message-scroll-row::-webkit-scrollbar {
+  width: 8px;
+}
+.message-scroll-row::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+
+.message-card {
+  display: flex;
+  align-items: center;
+  background: #ffffffcc;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 250px;
+  max-width: 250px;
+  height: 64px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.avatar-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatar-wrapper canvas {
+  border-radius: 50%;
+}
+
+.message-content {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content .meta {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.message-content .text {
+  font-size: 13px;
+  color: #444;
+}
+
+
+.reaction-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 10px;
+  background: #ffffffcc;
+  border-radius: 10px;
+  padding: 10px;
+  width: 180px;
+  height: 170px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.comment-btn {
+  font-size: 14px;
+  padding: 5px;
+  background: #70b8ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.comment-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comment-input textarea {
+  width: 100%;
+  height: 50px;
+  resize: none;
+  border-radius: 6px;
+  padding: 4px;
+  font-size: 12px;
+}
+
+.comment-input button {
+  font-size: 12px;
+  padding: 4px;
+  background: #00bb66;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reaction-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.reaction-options button {
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reaction-options button:hover {
+  transform: scale(1.3);
+}
+
+    
+    .scroll-row {
+      display: flex;
+      overflow-x:hidden;
+      gap: 10px;
+    }
+    .scroll-row img, .scroll-row .friend {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      background: #eee;
+    }
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 55px;
+      padding: 10px 16px;
+      background: #ff7c7c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .close-btn:hover {
+      background: #ff4c4c;
+    }

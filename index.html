@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Paradopica</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <script src="js/LiveCharacter.js"></script>
+<script src="scenes/ProfileAvatarScene.js"></script>
+<script src="scenes/ProfileFriendsScene.js"></script>
+<script src="scenes/ProfileOutfitScene.js"></script>
+<script src="scenes/ProfileMessageScene.js"></script>
+<script> 
+
+function refreshAvatar(outfit) {
+  if (window.avatarGame) {
+    window.avatarGame.destroy(true); // remove old game instance
+  }
+
+  window.avatarGame = new Phaser.Game({
+    type: Phaser.AUTO,
+  width: 160,
+  height: 160,
+  scene: [ProfileAvatarScene],
+  backgroundColor: '#FFFFFF', // transparent
+  parent: 'phaser-avatar'
+  });
+  
+}
+
+  const avatarGame = new Phaser.Game({
+  type: Phaser.AUTO,
+  width: 160,
+  height: 160,
+  scene: [ProfileAvatarScene],
+  backgroundColor: '#FFFFFF', // transparent
+  parent: 'phaser-avatar'
+});
+
+const friendGame = new Phaser.Game({
+    type: Phaser.AUTO,
+    width: 650,
+    height: 165,
+    scene: [ProfileFriendsScene],
+    backgroundColor: '#0084ff',
+    parent: 'friend-render-canvas'
+  });
+
+  const outfitGame = new Phaser.Game({
+    type: Phaser.AUTO,
+    width: 565,
+    height: 150,
+    scene: [ProfileOutfitScene],
+    backgroundColor: '#0084ff',
+    parent: 'outfit-render-canvas'
+  });
+
+  window.photoBoardData = [
+  'assets/screenshots/photo1.png',
+  'assets/screenshots/photo2.png',
+  'assets/screenshots/photo3.png'
+];
+
+function renderPhotoBoard() {
+  const photoRow = document.getElementById('photo-row');
+  photoRow.innerHTML = '';
+
+  window.photoBoardData.forEach((src, i) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Screenshot ${i + 1}`;
+    photoRow.appendChild(img);
+  });
+}
+
+
+    window.messageData = [
+  {
+    username: "BlueBean",
+    timestamp: "2h ago",
+    message: "I love your new look!",
+    avatarData: {
+      skinTint: 0xfcc89b,
+      top: 'shirt_blue',
+      bottom: 'pants_black',
+      eyetype: 'eye',
+      mouth: 'mouth_smile',
+      hair: 'hair_curly_brown'
+    }
+  },
+  {
+    username: "PixelPup",
+    timestamp: "3h ago",
+    message: "Just beat Disco Dynasty! Let's GOOOO 🔥",
+    avatarData: {
+      skinTint: 0xdda776,
+      top: 'shirt_red',
+      bottom: 'pants_gray',
+      eyetype: 'eye',
+      mouth: 'mouth_smile',
+      hair: 'hair_afro'
+    }
+  },
+  {
+    username: "TechnoTadpole",
+    timestamp: "5h ago",
+    message: "The carnival freaked me out… in a fun way.",
+    avatarData: {
+      skinTint: 0xffe0bd,
+      top: 'shirt_purple',
+      bottom: 'pants_black',
+      eyetype: 'eye',
+      mouth: 'mouth_smile',
+      hair: 'hair_buzzcut'
+    }
+  },
+  {
+    username: "MissMystic",
+    timestamp: "1d ago",
+    message: "I heard the Bloom isn't what it seems… 👀",
+    avatarData: {
+      skinTint: 0xc4a484,
+      top: 'shirt_black',
+      bottom: 'pants_white',
+      eyetype: 'eye',
+      mouth: 'mouth_smile',
+      hair: 'hair_straight_black'
+    }
+  },
+  {
+    username: "JumpJet",
+    timestamp: "2d ago",
+    message: "Add me if you’re headed to Millenia Mash soon!",
+    avatarData: {
+      skinTint: 0xdeb887,
+      top: 'shirt_green',
+      bottom: 'pants_blue',
+      eyetype: 'eye',
+      mouth: 'mouth_smile',
+      hair: 'hair_spiky'
+    }
+  }
+];
+ 
+function toggleCommentInput() {
+  const input = document.getElementById('comment-input');
+  input.style.display = input.style.display === 'none' ? 'flex' : 'none';
+}
+
+function submitComment() {
+  const textarea = document.querySelector('#comment-input textarea');
+  const msg = textarea.value.trim();
+  if (msg) {
+    window.messageData.unshift({
+      username: "You",
+      timestamp: "Just now",
+      message: msg,
+      avatarData: window.currentPlayerData // use player's own avatar config
+    });
+    textarea.value = '';
+    toggleCommentInput();
+    renderMessages();
+  }
+}
+
+
+  function renderMessages() {
+  const container = document.getElementById('message-row');
+  container.innerHTML = '';
+
+  (window.messageData || []).forEach((msg, index) => {
+    const card = document.createElement('div');
+    card.className = 'message-card';
+
+    const avatarWrapper = document.createElement('div');
+    avatarWrapper.className = 'avatar-wrapper';
+    avatarWrapper.id = `msg-avatar-${index}`;
+
+    const content = document.createElement('div');
+    content.className = 'message-content';
+    content.innerHTML = `
+      <div class="meta">${msg.username} • ${msg.timestamp}</div>
+      <div class="text">${msg.message}</div>
+    `;
+
+    card.appendChild(avatarWrapper);
+    card.appendChild(content);
+    container.appendChild(card);
+
+    // Render a live character in the wrapper
+    new Phaser.Game({
+      type: Phaser.AUTO,
+      width: 64,
+      height: 64,
+      scene: [{
+        preload: function () {
+          this.load.image('torso_base', '../assets/characters/base/torso_base.png');
+          this.load.image('head_base', '../assets/characters/base/head_base.png');
+          this.load.image('foot_base', '../assets/characters/base/foot_base.png');
+          this.load.image('hand_base', '../assets/characters/base/hand_base.png');
+          this.load.image('eye', '../assets/characters/base/eye_base.png');
+          this.load.image('mouth_smile', '../assets/characters/faces/mouth_smile.png');
+          this.load.image('shirt_blue', '../assets/characters/clothes/shirt_blue.png');
+          this.load.image('pants_black', '../assets/characters/clothes/pants_black.png');
+          this.load.image('hair_curly_brown', '../assets/characters/hair/hair_curly_brown.png');
+        },
+        create: function () {
+          new LiveCharacter(this, 32, 32, 'message', msg.avatarData);
+        }
+      }],
+      backgroundColor: 0x00000000,
+      parent: `msg-avatar-${index}`
+    });
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderMessages();
+  renderPhotoBoard();
+
+});
+
+
+
+
+</script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="profile-container">
+    <!-- Top Row -->
+    <div class="row">
+      <div class="profile-section" height="180px">
+        <div class="profile-header">
+          <div id="phaser-avatar" style="width: 160px; height: 160px; border-radius: 50%; overflow: hidden;"></div>
+          <div class="profile-stats">
+            <div><strong  style="font-size: 30px;">Raging Lightning</strong></div>
+            <div><strong style="font-size: 24px;">❤️</strong> 12 likes </div>
+            <div><strong style="font-size: 24px;">coin:</strong> 3 Islands Completed</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-section" >
+        <div class="tab-header">Sticker Wall</div>
+        <div class="scroll-row">
+          <!-- Stickers go here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Row -->
+    <div class="row">
+      <div class="section">
+      <div style="display: flex; gap: 10px;">
+  <!-- New Comment & Reaction Panel -->
+  <div class="reaction-panel">
+    <button class="comment-btn" onclick="toggleCommentInput()">💬 Add Comment</button>
+    <div id="comment-input" class="comment-input" style="display: none;">
+      <textarea placeholder="Write a message..."></textarea>
+      <button onclick="submitComment()">Send</button>
+    </div>
+    <div class="reaction-options">
+      <button>❤️</button>
+      <button>🔥</button>
+      <button>😂</button>
+      <button>🎉</button>
+      <button>😎</button>
+      <button>🌟</button>
+    </div>
+  </div>
+
+  <!-- Message Section -->
+  
+    <div class="message-scroll-row" id="message-row">
+      <!-- JS will inject messages -->
+    </div>
+  </div>
+</div>
+
+
+
+
+      <div class="tab-section" style="height: 180px;">
+        <div class="tab-header">Friends: 3</div>
+        <div class="scroll-row" style="width: 620px;">
+          <div id="friend-render-canvas" style="width: 650px; height: 180px; background: transparent;"></div>
+            <div class="scroll-fade-left"></div>
+            <div class="scroll-fade-right"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="row">
+      <div class="tab-section">
+        <div class="tab-header">Photo Board</div>
+        <div class="photo-scroll-row" id="photo-row">
+    <!-- Photos will be injected here -->
+  </div>+
+        </div>
+      <div class="tab-section"  style="height: 150px;">
+        <div class="tab-header">Costume Closet</div>
+        <div class="scroll-row" style="width: 565px;">
+          <div id="outfit-render-canvas" style="width: 565px; height: 150px; background: transparent;">
+            <div class="scroll-fade-left"></div>
+            <div class="scroll-fade-right"></div>
+
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <button class="close-btn" onclick="document.getElementById('profile-container').style.display = 'none';">Close</button>
+  </div>
+
+  <script>
+
+    class MapScene extends Phaser.Scene {
+      constructor() {
+        super('MapScene');
+      }
+
+      preload() {
+        this.load.image('map', 'assets/images/Map.png');
+        this.load.image('balloon', 'assets/images/hotairballoon.png');
+      }
+
+      create() {
+        this.map = this.add.image(480, 270, 'map');
+        this.map.setScale(2.8);
+        this.balloon = this.physics.add.image(480, 270, 'balloon');
+        this.balloon.setScale(0.5);
+        this.balloon.setCollideWorldBounds(true);
+
+        const profileBtn = this.add.text(800, 20, 'View Profile', {
+          font: '18px Arial',
+          fill: '#ffffff',
+          backgroundColor: '#0077cc',
+          padding: { x: 10, y: 5 },
+          borderRadius: 5
+        }).setInteractive();
+
+        profileBtn.on('pointerdown', () => {
+          document.getElementById('profile-container').style.display = 'flex';
+        });
+
+        const islandData = [
+          { x: 200, y: 300, name: 'Millenia-Mash Island', scene: 'Island1' },
+          { x: 500, y: 100, name: 'Disco Dynasty Plaza', scene: 'Island2' },
+          { x: 750, y: 400, name: 'Steam & Selfies Square', scene: 'Island3' }
+        ];
+
+        this.islandInfo = this.add.text(0, 0, '', {
+          font: '18px Arial',
+          fill: '#000',
+          backgroundColor: '#fff',
+          padding: { x: 10, y: 5 },
+          borderRadius: 5
+        }).setVisible(false);
+
+        islandData.forEach(data => {
+          const zone = this.add.circle(data.x, data.y, 20, 0x000000, 0.3).setInteractive(); // Will later be replaced with a proper image
+          zone.on('pointerover', () => {
+            this.islandInfo.setText(data.name);
+            this.islandInfo.setPosition(data.x + 10, data.y - 10);
+            this.islandInfo.setVisible(true);
+          });
+          zone.on('pointerout', () => this.islandInfo.setVisible(false));
+          zone.on('pointerdown', () => {
+            this.scene.start(data.scene);
+          });
+        });
+      }
+
+      update() {
+        const pointer = this.input.activePointer;
+        this.physics.moveToObject(this.balloon, pointer, 150);
+
+        const dist = Phaser.Math.Distance.Between(this.balloon.x, this.balloon.y, pointer.x, pointer.y);
+        if (dist < 5) {
+          this.balloon.body.setVelocity(0);
+        }
+      }
+    }
+
+    class Island1 extends Phaser.Scene {
+      constructor() {
+        super('Island1');
+      }
+
+      create() {
+        this.add.text(20, 20, 'Welcome to Millenia-Mash Island!', {
+          font: '24px Arial',
+          fill: '#000'
+        });
+
+        const backButton = this.add.text(20, 500, '← Back to Map', {
+          font: '18px Arial',
+          fill: '#000',
+          backgroundColor: '#fff',
+          padding: { x: 10, y: 5 }
+        }).setInteractive();
+
+        backButton.on('pointerdown', () => this.scene.start('MapScene'));
+      }
+    }
+
+    class Island2 extends Phaser.Scene {
+      constructor() {
+        super('Island2');
+      }
+
+      create() {
+        this.add.text(20, 20, 'Welcome to Disco Dynasty Plaza!', {
+          font: '24px Arial',
+          fill: '#000'
+        });
+
+        const backButton = this.add.text(20, 500, '← Back to Map', {
+          font: '18px Arial',
+          fill: '#000',
+          backgroundColor: '#fff',
+          padding: { x: 10, y: 5 }
+        }).setInteractive();
+
+        backButton.on('pointerdown', () => this.scene.start('MapScene'));
+      }
+    }
+
+    class Island3 extends Phaser.Scene {
+      constructor() {
+        super('Island3');
+      }
+
+      create() {
+        this.add.text(20, 20, 'Welcome to Steam & Selfies Square!', {
+          font: '24px Arial',
+          fill: '#000'
+        });
+
+        const backButton = this.add.text(20, 500, '← Back to Map', {
+          font: '18px Arial',
+          fill: '#000',
+          backgroundColor: '#fff',
+          padding: { x: 10, y: 5 }
+        }).setInteractive();
+
+        backButton.on('pointerdown', () => this.scene.start('MapScene'));
+      }
+    }
+
+    const config = {
+      type: Phaser.AUTO,
+      width: 960,
+      height: 540,
+      physics: {
+        default: 'arcade',
+        arcade: { debug: false }
+      },
+      scene: [MapScene, Island1, Island2, Island3],
+      backgroundColor: '#aee0ff'
+    };
+
+    const game = new Phaser.Game(config);
+  </script>
+</body>
+</html>
